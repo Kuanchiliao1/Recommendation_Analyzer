@@ -103,7 +103,7 @@ class Recommendation
 
   def ask_details
     puts "So it seems like your some recommended #{title} to you"
-    
+
     puts "I'm going to ask you a short series of 4 questions to help calibrate our algorithm now"
     sleep(2)
     puts "(1/4)Who is the friend/source that recommended this to you?"
@@ -165,7 +165,7 @@ class User
   end
 
   def get_rec?
-    
+
   end
 end
 
@@ -183,3 +183,27 @@ class Program
 end
 
 Program.new
+
+
+
+=begin
+Recommendation
+  - constructor
+    - 
+
+User
+  - constructor
+    - @recs = []
+    - @name = get_name
+    - @friends = []
+  - get_name
+  - new_rec
+    - Create Rec obj
+
+Program
+  - constructor
+    - @users = []s
+    - new_user
+  - new_user
+    - Create User obj 
+=end
