@@ -39,7 +39,8 @@ Additional features:
 - Track who your top friends for recs are
 - Add place for your friend to submit recs directly
 =end
-require 'io/console' 
+
+require 'io/console'
 
 class Friend
 end
@@ -76,7 +77,7 @@ class Recommendation
     Now, instead of telling your friends that you'll "get to it" when they disappointedly ask you why you never follow their recs, you can confidently tell them that your life is at the mercy of an algorithm and there's nothing you can do. See how much better that sounds?
     TEXT
     puts text
-    continue_story
+    press_to_continue
   end
 
   def ask_friends
@@ -119,7 +120,7 @@ class Recommendation
     actual_friend_rating = gets.chomp
     sleep(1)
     puts "Perfect!"
-    continue_story
+    press_to_continue
     system("clear")
     puts "To conclude... \nYou rate #{friend_name} a #{actual_friend_rating} out of 10 as a person\nYou rate #{title} a #{friend_rating} out of 10\n And you rate #{title} a #{actual_friend_rating} out of 10"
   end
@@ -136,11 +137,49 @@ class Recommendation
     display_score
   end
 
-  def continue_story                                                                                                               
-    print "\n===>press any key to continue\r"                                                                                                    
-    STDIN.getch                                                                                                              
-    print "            \r" # extra space to overwrite in case next sentence is short                                                                                                              
+  def press_to_continue
+    print "\n===>press any key to continue\r"
+    STDIN.getch
+    print "            \r" # extra space to overwrite in case next sentence is short
   end
 end
 
-Recommendation.new
+class User
+  def initialize
+    @recs = []
+    #@user stats
+    @name = get_name
+  end
+
+  def get_name
+    name = nil
+
+    loop do
+      puts "Hi! Please enter your name"
+      name = gets.chomp
+      break if name.strip(" ") == ""
+      puts "ik ur mom said u can be whatever u want but u cant so pick a proper name!"
+    end
+
+    name
+  end
+
+  def get_rec?
+    
+  end
+end
+
+class Program
+  attr_reader :users
+
+  def initialize
+    @users = []
+    new_user
+  end
+
+  def new_user
+    users << User.new
+  end
+end
+
+Program.new
