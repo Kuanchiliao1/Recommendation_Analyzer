@@ -5,6 +5,7 @@ The steps that I use for initial design (getting to a class diagram), are:
 
 Requirements gathering. Talk to the client and factor out the use cases to define what functionality the software should have.
 
+
 Compose a narrative of the individual use cases.
 
 Go through the narrative and highlight nouns (person, place, thing), as candidate classes and verbs (actions), as methods / behaviors.
@@ -12,12 +13,21 @@ Go through the narrative and highlight nouns (person, place, thing), as candidat
 Discard duplicate nouns and factor out common functionality.
 
 Create a class diagram. If you're a Java developer, NetBeans 6.7 from Sun has a UML module that allows for diagramming as well as round-trip engineering and it's FREE. Eclipse (an open source Java IDE), also has a modeling framework, but I have no experience with it. You may also want to try out ArgoUML, an open source tool.
+
+online.visual-paradigm.com/app/diagrams
 ---------------
 Apply OOD principles to organize your classes (factor out common functionality, build hierarchies, etc.)
 
 Make absolutely sure you know what your program is all about before you start. What is your program? What will it not do? What problem is it trying to solve?
 
+# My program is aiming to gather the recommendations from users, and help them decide what content they should consume last. It will store the stuff recommended to them for future use. Stores info about their friends/source. 
+  # It will NOT 
+  # It's trying to solve the problem of having too many recommendations to chose from
+
 Your first set of use cases shouldn't be a laundry list of everything the program will eventually do. Start with the smallest set of use cases you can come up with that still captures the essence of what your program is for. For this web site, for example, the core use cases might be log in, ask a question, answer a question, and view questions and answers. Nothing about reputation, voting, or the community wiki, just the raw essence of what you're shooting for.
+# The user enters a recommendation and answer some quesitons
+  # Then, this data is stored and the user can compare all of their recommendations. The app will display the top scoring ones to them first.
+# 
 
 As you come up with potential classes, don't think of them only in terms of what noun they represent, but what responsibilities they have. I've found this to be the biggest aid in figuring out how classes relate to each other during program execution. It's easy to come up with relationships like "a dog is an animal" or "a puppy has one mother." It's usually harder to figure out relationships describing run-time interactions between objects. You're program's algorithms are at least as important as your objects, and they're much easier to design if you've spelled out what each class's job is.
 
@@ -69,12 +79,17 @@ Additional features:
 
 require 'io/console'
 
+# 
 class Friend
 end
 
+# Stores all stats data on the user
+# Includes friend objects as collaborator
 class Score
 end
 
+# Asks user for data pertaining to recommendation object
+# 
 class Recommendation
   # @friend/source name
   # @score
@@ -88,24 +103,7 @@ class Recommendation
     ask_info
   end
 
-  def welcome
-    system("clear")
-    puts "Hi there!"
-    sleep(1)
-    puts "I'm the recommendation analyzer!"
-    sleep(1)
-    text = <<~TEXT 
 
-
-    Do you get more recommendations than you possibly have time for? Have friends that recommend you a constant stream of content that you have no time to watch/read/listen even though you want to? Perhaps you even have a list somewhere sitting around and collecting dust. 
-
-    The Recommendation Analyzer will help you with getting to the top priority items by applying our proprietory algorithm to all your recs.
-    
-    Now, instead of telling your friends that you'll "get to it" when they disappointedly ask you why you never follow their recs, you can confidently tell them that your life is at the mercy of an algorithm and there's nothing you can do. See how much better that sounds?
-    TEXT
-    puts text
-    press_to_continue
-  end
 
   def ask_friends
     system("clear")
@@ -128,6 +126,7 @@ class Recommendation
     @title = gets.chomp
   end
 
+  # Prob want to split this up a bit
   def ask_details
     puts "So it seems like your some recommended #{title} to you"
 
@@ -171,6 +170,8 @@ class Recommendation
   end
 end
 
+# Set/change name of user
+# Store recommendation objects and stats object
 class User
   def initialize
     @recs = []
@@ -196,16 +197,37 @@ class User
   end
 end
 
+# Starts up the program
+# Instantiates new users
 class Program
   attr_reader :users
 
   def initialize
     @users = []
     new_user
+    welcome
   end
 
   def new_user
     users << User.new
+  end
+
+  def welcome
+    system("clear")
+    puts "Hi there!"
+    sleep(1)
+    puts "I'm the recommendation analyzer!"
+    sleep(1)
+    text = <<~TEXT 
+
+    Do you get more recommendations than you possibly have time for? Have friends that recommend you a constant stream of content that you have no time to watch/read/listen even though you want to? Perhaps you even have a list somewhere sitting around and collecting dust. 
+
+    The Recommendation Analyzer will help you with getting to the top priority items by applying our proprietory algorithm to all your recs.
+    
+    Now, instead of telling your friends that you'll "get to it" when they disappointedly ask you why you never follow their recs, you can confidently tell them that your life is at the mercy of an algorithm and there's nothing you can do. See how much better that sounds?
+    TEXT
+    puts text
+    press_to_continue
   end
 end
 
