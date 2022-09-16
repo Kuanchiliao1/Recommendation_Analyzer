@@ -1,4 +1,5 @@
 =begin
+FUCK
 Recommendation Analyzer
 Description: 
 Do you get more recommendations than you possibly have time for? Have friends that recommend you a constant stream of content that you have no time to watch/read/listen even though you want to? Perhaps you even have a list somewhere sitting around and collecting dust. 
