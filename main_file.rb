@@ -115,7 +115,7 @@ class Recommendation
       break if ["y", "n"].include?(choice)
       "Please enter a valid input!"
     end
-    
+
     puts "Great!"
     sleep(1)
   end
