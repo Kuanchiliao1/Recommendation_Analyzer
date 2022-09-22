@@ -65,9 +65,8 @@ class Recommendation
   attr_reader :self_score, :friend, :friend_score
 end
 
-require 'pry'
-
-class ReccomendationFetcher
+# class for creating new recommendations
+class RecommendationFetcher
   MEDIA_TYPES = "game movie show book".freeze
   RATING_RANGE = (1..10).freeze
 
@@ -275,7 +274,8 @@ class Program
 
   def get_new_rec 
     # setting to a variable in case code needs to be edited in a way that allows data to be used (such as storing new reccomendation to database)
-    data = ReccomendationFetcher.new
+    # may need to pass RecommendationFetcher a database here so it can save it's info to that database
+    data = RecommendationFetcher.new
   end
 
   def goodbye_prompt
