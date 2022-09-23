@@ -1,258 +1,298 @@
-=begin
----------------
-Stackoverflow answers on how to do OOD
-The steps that I use for initial design (getting to a class diagram), are:
+require "sinatra"
+require "sinatra/reloader"
+require "tilt/erubis"
 
-Requirements gathering. Talk to the client and factor out the use cases to define what functionality the software should have.
-
-
-Compose a narrative of the individual use cases.
-
-Go through the narrative and highlight nouns (person, place, thing), as candidate classes and verbs (actions), as methods / behaviors.
-
-Discard duplicate nouns and factor out common functionality.
-
-Create a class diagram. If you're a Java developer, NetBeans 6.7 from Sun has a UML module that allows for diagramming as well as round-trip engineering and it's FREE. Eclipse (an open source Java IDE), also has a modeling framework, but I have no experience with it. You may also want to try out ArgoUML, an open source tool.
-
-online.visual-paradigm.com/app/diagrams
----------------
-Apply OOD principles to organize your classes (factor out common functionality, build hierarchies, etc.)
-
-Make absolutely sure you know what your program is all about before you start. What is your program? What will it not do? What problem is it trying to solve?
-
-# My program is aiming to gather the recommendations from users, and help them decide what content they should consume last. It will store the stuff recommended to them for future use. Stores info about their friends/source. 
-  # It will NOT 
-  # It's trying to solve the problem of having too many recommendations to chose from
-
-Your first set of use cases shouldn't be a laundry list of everything the program will eventually do. Start with the smallest set of use cases you can come up with that still captures the essence of what your program is for. For this web site, for example, the core use cases might be log in, ask a question, answer a question, and view questions and answers. Nothing about reputation, voting, or the community wiki, just the raw essence of what you're shooting for.
-# The user enters a recommendation and answer some quesitons
-  # Then, this data is stored and the user can compare all of their recommendations. The app will display the top scoring ones to them first.
-# 
-
-As you come up with potential classes, don't think of them only in terms of what noun they represent, but what responsibilities they have. I've found this to be the biggest aid in figuring out how classes relate to each other during program execution. It's easy to come up with relationships like "a dog is an animal" or "a puppy has one mother." It's usually harder to figure out relationships describing run-time interactions between objects. You're program's algorithms are at least as important as your objects, and they're much easier to design if you've spelled out what each class's job is.
-
-Once you've got that minimal set of use cases and objects, start coding. Get something that actually runs as soon as possible, even though it doesn't do much and probably looks like crap. It's a starting point, and will force you to answer questions you might gloss over on paper.
-
-Now go back and pick more use cases, write up how they'll work, modify your class model, and write more code. Just like your first cut, take on as little at a time as you can while still adding something meaningful. Rinse and repeat.
----------------
-
-Recommendation Analyzer
-Description: 
-Do you get more recommendations than you possibly have time for? Have friends that recommend you a constant stream of content that you have no time to watch/read/listen even though you want to? Perhaps you even have a list somewhere sitting around and collecting dust. 
-
-The Recommendation Analyzer will help you with getting to the top priority items by applying our proprietory algorithm to all your recs.
-
-Now, instead of telling your friends that you'll "get to it" when they disappointedly ask you why you never follow their recs, you can confidently tell them that your life is at the mercy of an algorithm and there's nothing you can do. See how much better that sounds?
-
-Here's how it goes:
-1. Enter the title
-2. Select a tag to indicate genre: 
-3. From 1-10 rate you how much you 
-4. How much do you THINK you'll enjoy this?
-5
-
-Input fields(* is optional):
-- Title
-- Type of media* - entering this allows you to filter your search results
-- Genre* - entering this allows you to filter your search results
-- Friend/source name
-- Details*
-Scales 1-10(all optional, but putting in more data gives better results)
-- How much do you think you will actually enjoy this?
-- Ask your friend to rate it themselves
-- ...
-
-Time multiplier
-- Older stuff is worth less??
-
-Add up the scores to get the final recommendation score
-
-
-
-Additional features:
-- Rate it again AFTER you finished it
-- Graphs to see correlations between highest rec rating vs how much you enjoyed
-- Place to put reviews
-- Track who your top friends for recs are
-- Add place for your friend to submit recs directly
-=end
+get "/" do
+  erb "Testing", layout: :layout
+end
 
 require 'io/console'
 
-# 
-class Friend
-end
-
-# Stores all stats data on the user
-# Includes friend objects as collaborator
-class Score
-end
-
-# Asks user for data pertaining to recommendation object
-# 
-class Recommendation
-  # @friend/source name
-  # @score
-  # @title
-  attr_reader :title, :score
-
+# stores list of recomendations and friends assigned to recomendations
+class Database
   def initialize
-    @score
-    @title
-    @friend
-    ask_info
+    @recomendations = []
+    @friends = []
   end
 
+  def list_friends
+    puts "I'm listing friends"
+  end
 
+  def list_recomendations
+  end
 
-  def ask_friends
-    system("clear")
-    puts "First off, do you have any friends? (y/n)"
-    choice = nil
+  def fetch_rec
+  end
 
-    loop do
-      choice = gets.chomp
-      break if ["y", "n"].include?(choice)
-      "Please enter a valid input!"
+  def friend_recs
+  end
+
+  def delete_rec
+  end
+end
+
+# seperate friend object so relationship scores can carry over between recomendations
+class Friend
+  attr_reader :relationship_score
+
+  def initialize(name, relationship_score)
+    @name = name
+    @relationship_score = relationship_score
+  end
+
+  def exists?
+    !@name.nil?
+  end
+end
+
+# Stores stats of the recommendation
+class Recommendation
+  attr_reader :score
+
+  def initialize(title, media_type, self_score, friend_score, friend_object)
+    @title = title
+    @media_type = media_type
+    @self_score = self_score
+    @friend = friend_object
+    @friend_score = friend_score
+    @score = calculate_overall_score
+  end
+
+  def to_s
+  end
+
+  def calculate_overall_score
+    if friend.exists?
+      (self_score * friend.relationship_score * friend_score) / 3
+    else
+      self_score
     end
+  end
+
+  private
+
+  attr_reader :self_score, :friend, :friend_score
+end
+
+# class for creating new recommendations
+class RecommendationFetcher
+  MEDIA_TYPES = "game movie show book".freeze
+  RATING_RANGE = (1..10).freeze
+
+  attr_accessor :rec_title, :media_type, :friend_name, :relationship_score, :friend_score, :self_score, :friend_object
+
+  def initialize
+    @rec_title = get_title
+    reset
+    @media_type = get_media_type
+    reset
+    @friend_name = get_friend_name
+    reset
+    @relationship_score = get_relationship_score unless friend_name.nil?
+    reset
+    @friend_score = get_friend_score if friend?
+    reset
+    @self_score = get_self_score
+    reset
+    display_info # need to add some way to display final overall score here
+    # want to enter a line here that asks if everything is correct, then gives an option to change anything they want to change
+    @friend_object = create_friend
+    @rec_object = create_rec
+    store_info if store?
+    display_goodbye
+  end
+
+  def get_title
+    loop do
+      puts "What's the name of a book/movie/game/etc. that you've been meaning to get around to?"
+      title = gets.chomp
+      return title unless title.empty?
+
+      puts "Please enter a non-empty name"
+    end
+  end
+
+  def get_media_type
+    loop do
+      puts "What type of media is #{rec_title}? (Game, movie, show or book)"
+      media = gets.chomp.downcase
+      return media if MEDIA_TYPES.split.include?(media)
+
+      puts "Please enter either game, movie, show, or book"
+    end
+  end
+
+  def get_friend_name
+    puts "Did a friend recomend this to you?"
+    choice = gets.chomp.downcase
+    return nil if choice.start_with?('n')
 
     puts "Great!"
-    sleep(1)
-  end
-
-  def ask_recommendation
-    puts "What is a book/movie/game (it can be anything really) that a friend recommended to you but you haven't gotten around to?"
-    puts "Please enter the name of the content here:"
-    @title = gets.chomp
-  end
-
-  # Prob want to split this up a bit
-  def ask_details
-    puts "So it seems like your some recommended #{title} to you"
-
-    puts "I'm going to ask you a short series of 4 questions to help calibrate our algorithm now"
-    sleep(2)
-    puts "(1/4)Who is the friend/source that recommended this to you?"
-    friend_name = gets.chomp
-    sleep(1)
-    puts "Awesome. "
-    puts "(2/4) On a scale of 1-10, how much do YOU want to read #{title}?"
-    self_rating = gets.chomp
-    sleep(1)
-    puts "(3/4) On a scale of 1-10, what does your friend rate #{title}?"
-    friend_rating = gets.chomp
-    sleep(1)
-    puts "(4/4) On a scale of 1-10, what do you rate your friend #{friend_name} overall?"
-    actual_friend_rating = gets.chomp
-    sleep(1)
-    puts "Perfect!"
-    press_to_continue
-    system("clear")
-    puts "To conclude... \nYou rate #{friend_name} a #{actual_friend_rating} out of 10 as a person\nYou rate #{title} a #{friend_rating} out of 10\n And you rate #{title} a #{actual_friend_rating} out of 10"
-  end
-
-  def display_score
-    "Your recommendation score for this item is #{score}"
-  end
-
-  def ask_info
-    welcome
-    ask_friends
-    ask_recommendation
-    ask_details
-    display_score
-  end
-
-  def press_to_continue
-    print "\n===>press any key to continue\r"
-    STDIN.getch
-    print "            \r" # extra space to overwrite in case next sentence is short
-  end
-end
-
-# Set/change name of user
-# Store recommendation objects and stats object
-class User
-  def initialize
-    @recs = []
-    #@user stats
-    @name = get_name
-  end
-
-  def get_name
-    name = nil
-
     loop do
-      puts "Hi! Please enter your name"
-      name = gets.chomp
-      break if name.strip(" ") == ""
-      puts "ik ur mom said u can be whatever u want but u cant so pick a proper name!"
+      puts "What's your friends name?"
+      name = gets.chomp.downcase
+      return name unless name.empty?
+
+      puts "Please enter a non empty name"
+    end
+  end
+
+  def friend?
+    !friend_name.nil?
+  end
+
+  def get_relationship_score
+    loop do
+      puts "What would you rate your friend on a scale from #{RATING_RANGE.first} to #{RATING_RANGE.last}? (as a person)"
+      relationship_score = gets.chomp.to_i
+      return relationship_score if RATING_RANGE.include?(relationship_score)
+
+      puts "Please enter a number between #{RATING_RANGE.first} and #{RATING_RANGE.last}"
+    end
+  end
+
+  def get_friend_score
+    loop do
+      puts "What did your friend rate #{rec_title} on a scale from #{RATING_RANGE.first} to #{RATING_RANGE.last}?"
+      score = gets.chomp.to_i
+      return score if RATING_RANGE.include?(score)
+
+      puts "Please enter a number between #{RATING_RANGE.first} and #{RATING_RANGE.last}"
+    end
+  end
+
+  def get_self_score
+    loop do
+      puts "What would you rate #{rec_title} on a scale from #{RATING_RANGE.first} to #{RATING_RANGE.last}? (based on your own opinions)"
+      score = gets.chomp.to_i
+      return score if RATING_RANGE.include?(score)
+
+      puts "Please enter a number between #{RATING_RANGE.first} and #{RATING_RANGE.last}"
+    end
+  end
+
+  def create_friend
+    friend = Friend.new(friend_name, relationship_score)
+  end
+
+  def create_rec
+    recommendation = Recommendation.new(rec_title, media_type, self_score, friend_score, friend_object)
+  end
+
+  def display_info
+    puts "Ok here's what I got"
+    sleep(1)
+    puts "You've been recomended the #{media_type} #{rec_title}."
+    display_friend_info if friend?
+    puts "You rate #{rec_title} a #{friend_score} out of #{RATING_RANGE.last}."
+    # want to enter a line here that asks if everything is correct, then gives an option to change anything they want to change
+  end
+
+  def display_friend_info
+    puts "This was recomended to you by your friend #{friend_name}, who you rate #{relationship_score} out of #{RATING_RANGE.last}."
+    puts "Your friend rates #{rec_title} a #{friend_score} out of #{RATING_RANGE.last}."
+  end
+
+  def store_info
+    puts "Your recommendation has been saved"
+    # add to database
+    # the way this class is configured it currently doesn't have access to the database
+  end
+
+  def store?
+    choice = nil
+    loop do
+      puts "Would you like save this information? (y/n)"
+      choice = gets.chomp.downcase
+      break if %w(y n).include?(choice)
+
+      puts "Please enter y or n"
     end
 
-    name
+    choice == 'y'
   end
 
-  def get_rec?
+  def display_goodbye
+    puts "Thank you for using Recomendation Analyzer"
+  end
 
+  def reset
+    # system('clear')
   end
 end
 
 # Starts up the program
 # Instantiates new users
+# main program
+# PROGRAM_KEY needs updating to work. Basically want to create a key that takes a user input and returns a method name to be run if 
 class Program
-  attr_reader :users
+  PROGRAM_KEYS = ['add recommendation', 'list friends'].freeze
 
   def initialize
-    @users = []
-    new_user
-    welcome
+    @database = Database.new
   end
 
-  def new_user
-    users << User.new
+  def start
+    opening_prompt
+    loop do
+      program_choice = choose_program
+      run(program_choice)
+      break if run_again?
+    end
+    goodbye_prompt
   end
 
-  def welcome
-    system("clear")
-    puts "Hi there!"
-    sleep(1)
-    puts "I'm the recommendation analyzer!"
-    sleep(1)
-    text = <<~TEXT 
+  private
 
-    Do you get more recommendations than you possibly have time for? Have friends that recommend you a constant stream of content that you have no time to watch/read/listen even though you want to? Perhaps you even have a list somewhere sitting around and collecting dust. 
+  attr_reader :database
 
-    The Recommendation Analyzer will help you with getting to the top priority items by applying our proprietory algorithm to all your recs.
-    
-    Now, instead of telling your friends that you'll "get to it" when they disappointedly ask you why you never follow their recs, you can confidently tell them that your life is at the mercy of an algorithm and there's nothing you can do. See how much better that sounds?
-    TEXT
-    puts text
-    press_to_continue
+  def opening_prompt
+    puts "Welcome to Recomendation Database"
+  end
+
+  def choose_program
+    loop do
+      puts "What program would you like to use today? (Available programs: #{PROGRAM_KEYS.join(', ')})"
+      program = gets.chomp.downcase
+      return program if PROGRAM_KEYS.include?(program)
+
+      puts "Please input a valid program"
+      puts "The available options are: #{PROGRAM_KEYS.join(', ')}"
+    end
+  end
+
+  def run(program_choice)
+    case program_choice
+    when 'add recommendation'
+      puts "rec"
+      get_new_rec
+    when 'list friends'
+      database.list_friends
+    end
+  end
+
+  def run_again?
+    ans = nil
+    loop do
+      puts "Would you like to run another program? (y/n)"
+      ans = gets.chomp.downcase
+      return false if ans == 'y'
+      return true if ans == 'n'
+
+      puts "Please input either y or n"
+    end
+  end
+
+  def get_new_rec 
+    # setting to a variable in case code needs to be edited in a way that allows data to be used (such as storing new recomendation to database)
+    # may need to pass RecommendationFetcher a database here so it can save it's info to that database
+    data = RecommendationFetcher.new
+  end
+
+  def goodbye_prompt
+    puts "Goodbye, thank you for using Recomendation Database"
   end
 end
 
-Program.new
-
-
-
-=begin
-Recommendation
-  - constructor
-    - 
-
-User
-  - constructor
-    - @recs = []
-    - @name = get_name
-    - @friends = []
-  - get_name
-  - new_rec
-    - Create Rec obj
-
-Program
-  - constructor
-    - @users = []s
-    - new_user
-  - new_user
-    - Create User obj 
-=end
+Program.new.start

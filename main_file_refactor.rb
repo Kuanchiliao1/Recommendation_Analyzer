@@ -35,7 +35,7 @@ class Friend
     !@name.nil?
   end
 end
-
+##
 # reccomendation object where all scores are stored
 class Recommendation
   attr_reader :score
