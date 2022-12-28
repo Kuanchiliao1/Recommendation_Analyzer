@@ -1,3 +1,2 @@
-require './todo'
-run Sinatra::Application
-
+require './app/analyzer.rb'
+run Sinatra::Application'
