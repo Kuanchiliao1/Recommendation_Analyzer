@@ -31,7 +31,7 @@ class AnalyzerDatabase
   def hello_test
     sql = "SELECT * FROM recommendations"
     query(sql)
-    "hello borld"
+    "hello morld"
   end
 
   # Create friend

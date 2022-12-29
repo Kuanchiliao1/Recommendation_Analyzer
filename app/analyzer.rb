@@ -5,12 +5,6 @@ require "tilt/erubis"
 require_relative "database.rb"
 require_relative "helpers.rb"
 
-# Update server without relaunching
-require "sinatra/reloader"
-also_reload "database.rb"
-also_reload "helpers.rb"
-also_reload "public/stylesheets/styles.css"
-
 # Establish browser sessions and escape any html injection
 configure do
   enable :sessions
