@@ -25,13 +25,28 @@ CREATE TABLE recommendations (
   completed_date date
 );
 
+-- good seed data
 INSERT INTO friends (name, trust_rating) VALUES ('Bob', 7);
-INSERT INTO friends (name, trust_rating) VALUES ('bad bob', 12);
+INSERT INTO friends (name, trust_rating) VALUES ('Esche', 9);
+
+INSERT INTO recommendations                                           -- recs for Bob
+            (name, media_type, description, friend_id,
+            friend_rating, self_rating, analyzed_rating)
+            VALUES ('Skylanders', 'game', 'good game', 1, 6, 4, 5);
+
+INSERT INTO recommendations                                           -- recs for Esche
+            (name, media_type, description, friend_id,
+            friend_rating, self_rating, analyzed_rating)
+            VALUES ('Native Son', 'book', 'good book', 2, 9, 8, 9);
 
 INSERT INTO recommendations
             (name, media_type, description, friend_id,
             friend_rating, self_rating, analyzed_rating)
-            VALUES ('Skylanders', 'game', 'good game', 1, 6, 4, 5);
+            VALUES ('Citizen Sleeper', 'game', '2nd good game', 2, 7, 9, 8);
+
+
+-- bad seed data for constraint testing, should all fail
+INSERT INTO friends (name, trust_rating) VALUES ('bad bob', 12);
 
 INSERT INTO recommendations
             (name, media_type, description, friend_id,
@@ -41,4 +56,4 @@ INSERT INTO recommendations
 INSERT INTO recommendations
             (name, media_type, description, friend_id,
             friend_rating, self_rating, analyzed_rating)
-            VALUES ('Bad rating', 'bang', 'fake game', 1, 16, 4, 5);
+            VALUES ('Bad rating', 'bang', 'fake game', 1, 6, 4, 5);

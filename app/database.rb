@@ -28,12 +28,6 @@ class AnalyzerDatabase
           friend_rating, self_rating, analyzed_rating)
   end
 
-  def hello_test
-    sql = "SELECT * FROM recommendations"
-    query(sql)
-    "hello morld"
-  end
-
   # Create friend
   def create_friend(name, trust_rating)
     sql = "INSERT INTO friends (name, trust_rating) VALUES ($1, $2)"
@@ -48,8 +42,15 @@ class AnalyzerDatabase
   end
 
   # Return all completed recommendations + info
-  def all_recs
+  def completed_recs
     sql = "SELECT * FROM recommendations WHERE completed IS TRUE"
+    result = query(sql)
+    format_result(result)
+  end
+
+  # Return all recommendations with friends info
+  def recs_with_friends
+    sql = "SELECT r.*, f.name AS fname FROM recommendations AS r LEFT JOIN friends AS f ON r.friend_id = f.id"
     result = query(sql)
     format_result(result)
   end
@@ -58,6 +59,13 @@ class AnalyzerDatabase
   def find_rec(id)
     sql = "SELECT * FROM recommendations WHERE id = $1"
     result = query(sql, id)
+    format_result(result, single = true)
+  end
+
+  # Return list of existing friend names
+  def all_friends
+    sql = "SELECT * FROM friends"
+    result = query(sql)
     format_result(result)
   end
 
@@ -72,7 +80,7 @@ class AnalyzerDatabase
   def find_friend(id)
     sql = "SELECT * FROM friends WHERE id = $1"
     result = query(sql, id)
-    format_result(result)
+    format_result(result, single = true)
   end
 
   # Update info for recommendation
