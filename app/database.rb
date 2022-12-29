@@ -2,7 +2,7 @@ require "pg"
 
 class AnalyzerDatabase
   def initialize(logger)
-    @db = PG.connect(dbname: "shops")
+    @db = PG.connect(dbname: "recommendations")
     @logger = logger
   end
 
@@ -26,6 +26,12 @@ class AnalyzerDatabase
 
     query(sql, name, media_type, description, friend_id,
           friend_rating, self_rating, analyzed_rating)
+  end
+
+  def hello_test
+    sql = "SELECT * FROM recommendations"
+    query(sql)
+    "hello borld"
   end
 
   # Create friend
