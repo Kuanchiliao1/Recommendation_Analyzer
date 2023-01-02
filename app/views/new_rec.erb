@@ -1,1 +1,53 @@
-<p>New Rec page</p>
+<form action="/recommendations/new" method="post">
+  <dl>
+    <dt>
+      <label for="rec_name">Insert name of recommended media</label>
+    </dt>
+    <dd>
+      <input name="rec_name" type="text">
+    </dd>
+    <dt>
+      <label for="media_type">Choose a media type</label>
+    </dt>
+    <dd>
+      <select name="media_type">
+        <option value="tv show">Television Show</option>
+        <option value="movie">Movie</option>
+        <option value="book">Book</option>
+        <option value="game">Game</option>
+      </select>
+    </dd>
+    <dt>
+      <label for="description">Insert a short description of the recommendation</label>
+    </dt>
+    <dd>
+      <input name="description" type="text">
+    </dd>
+    <dt>
+      <label for="friend">Select which friend recommended you this media</label>
+    </dt>
+    <dd>
+      <select name="friend_id">
+        <% @friends.each do |friend| %>
+          <option value="<%= friend[:id] %>"><%= friend[:name] %></option>
+        <% end %>
+      </select>
+    </dd>
+    <dt>
+      <label for="friend_rating">What does your friend rate this media from 1 to 10</label>
+    </dt>
+    <dd>
+      <input name="friend_rating" type="number" min="1" max="10">
+    </dd>
+    <dt>
+      <label for="self_rating">What is your expected rating for this media from 1 to 10</label>
+    </dt>
+    <dd>
+      <input name="self_rating" type="number" min="1" max="10">
+    </dd>
+  </dl>
+  <fieldset class="actions">
+    <input type="submit" value="Save">
+    <a href="/home>">Cancel</a>
+  </fieldset>
+</form>

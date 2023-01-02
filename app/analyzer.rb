@@ -43,7 +43,15 @@ end
 
 # Create Recommendation Page
 get "/recommendations/new" do
+  @friends = @database.all_friends
   erb :new_rec, layout: :layout
+end
+
+# Add New Recommendation
+post "/recommendations/new" do
+  @database.create_rec(generate_rec_params)
+  # Add flash message
+  redirect "/home"
 end
 
 # Filter Recs button
@@ -78,6 +86,13 @@ get "/friends/new" do
   erb :new_friend, layout: :layout
 end
 
+# Add New Friend
+post "/friends/new" do
+  @database.create_friend(params[:friend_name], params[:trust_rating])
+  # confirmation flash message
+  redirect "/friends"
+end
+
 # Edit Friend Info Page
 get "/friends/:friend_id/edit" do
   @friend = @database.find_friend(params[:friend_id])
@@ -87,7 +102,7 @@ end
 # Delete Friend Button
 post "/friends/:friend_id/delete" do
   @database.delete_friend(params[:friend_id])
-  redirect "/home"
+  redirect "/friends"
 end
 
 # Account Page

@@ -12,11 +12,8 @@ class AnalyzerDatabase
     @db.exec_params(statement, params)
   end
 
-  # Create recommendation + generate analyzed score
-  #   Consider hash/array as paramater rather than seperate params
-  #   Should be okay if info is sanitized before passed to sql (which it should be)
-  def create_rec(name, media_type, description, friend_id, friend_rating, self_rating)
-    analyzed_rating = (friend_rating + self_rating) / 2
+  # Create recommendation
+  def create_rec(rec_params)
     sql = <<~SQL
       INSERT INTO recommendations
             (name, media_type, description, friend_id,
@@ -24,11 +21,11 @@ class AnalyzerDatabase
             VALUES ($1, $2, $3, $4, $5, $6, $7)
     SQL
 
-    query(sql, name, media_type, description, friend_id,
-          friend_rating, self_rating, analyzed_rating)
+    query(sql, *rec_params)
   end
 
   # Create friend
+  #   Considering changing to array like create_rec
   def create_friend(name, trust_rating)
     sql = "INSERT INTO friends (name, trust_rating) VALUES ($1, $2)"
     query(sql, name, trust_rating)

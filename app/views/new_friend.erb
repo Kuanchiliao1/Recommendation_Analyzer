@@ -1,1 +1,20 @@
-<p>New Friend</p>
+<form action="/friends/new" method="post">
+  <dl>
+    <dt>
+      <label for="friend_name">Insert your friends name</label>
+    </dt>
+    <dd>
+      <input name="friend_name" type="text">
+    </dd>
+    <dt>
+      <label for="trust_rating">How much do you trust your friend's taste from 1 to 10</label>
+    </dt>
+    <dd>
+      <input name="trust_rating" type="number" min="1" max="10">
+    </dd>
+  </dl>
+  <fieldset class="actions">
+    <input type="submit" value="Save">
+    <a href="/home>">Cancel</a>
+  </fieldset>
+</form>

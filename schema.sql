@@ -3,6 +3,7 @@ CREATE DATABASE recommendations;      --Creates and connects to recommendation d
 
 CREATE DOMAIN rating AS integer CHECK (value BETWEEN 1 and 10);
 CREATE TYPE media AS ENUM ('tv show', 'movie', 'book', 'game');
+CREATE TYPE completion_status AS ENUM ('not started', 'in progress', 'save for later', 'completed');
 
 CREATE TABLE friends (
   id serial PRIMARY KEY,
@@ -20,7 +21,7 @@ CREATE TABLE recommendations (
   self_rating rating NOT NULL,
   date_added date DEFAULT NOW() NOT NULL,
   analyzed_rating rating NOT NULL,
-  completed boolean DEFAULT false,
+  completed completion_status DEFAULT 'not started',
   completed_rating rating,
   completed_date date
 );
@@ -43,6 +44,13 @@ INSERT INTO recommendations
             (name, media_type, description, friend_id,
             friend_rating, self_rating, analyzed_rating)
             VALUES ('Citizen Sleeper', 'game', '2nd good game', 2, 7, 9, 8);
+
+-- completed rec
+INSERT INTO recommendations
+            (name, media_type, description, friend_id,
+            friend_rating, self_rating, analyzed_rating,
+            completed, completed_rating)
+            VALUES ('Iron Man 2', 'movie', 'Decent movie', 2, 5, 7, 6, 'completed', 5);
 
 
 -- bad seed data for constraint testing, should all fail
