@@ -1,0 +1,33 @@
+<div class="testbox">
+  <a href="/recommendations/new"><h2>New Rec</h2></a>
+  <a href="/friends"><h2>Friends</h2></a>
+  <a href="/account"><h2>Account</h2></a>
+  <a href="/support"><h2>Support</h2></a>
+</div>
+
+<ul>
+  <% @recommendations.each do |recommendation| %>
+    <div class="card" style="background-color:#CDCDCD">
+      <h2><%= recommendation[:name] %></h2>
+      <ul>
+        <li>media_type: <%= recommendation[:media_type] %></li>
+        <li>description: <%= recommendation[:description] %></li>
+        <li>fname: <%= recommendation[:fname] %></li>
+        <li>analyzed_rating: <%= recommendation[:analyzed_rating] %></li>
+        <li><h4>Expandable Content below</h4></li>
+        <li>friend_rating: <%= recommendation[:friend_rating] %></li>
+        <li>self_rating: <%= recommendation[:self_rating] %></li>
+        <li>date_added: <%= recommendation[:date_added] %></li>
+        <li>completed: <%= recommendation[:completed] %></li>
+        <li>completed_rating: <%= recommendation[:completed_rating] %></li>
+        <li>completed_date: <%= recommendation[:completed_date] %></li>
+      </ul>
+      <div class="testbox">
+        <form action="/recommendations/<%= recommendation[:id] %>/delete" method="post">
+          <button type="submit">Delete</button>
+        </form>
+        <a href="/recommendations/<%= recommendation[:id] %>/edit">Edit Rec</a>
+      </div>
+    </div>
+  <% end %>
+</ul>

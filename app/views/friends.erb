@@ -1,0 +1,18 @@
+<h2>Friends page</h2>
+<a href="/friends/new">
+  New Friend
+</a>
+<% @friends.each do |friend| %>
+  <ul>
+    <li>Name: <%= friend[:name] %></li>
+    <li>Trust Rating: <%= friend[:trust_rating] %></li>
+  </ul>
+  <div class="testbox">
+    <a href="/friends/<%= friend[:id] %>/edit">
+      Edit Friend Info
+    </a>
+    <form action="/friends/<%= friend[:id] %>/delete" method="post">
+      <button type="submit">Delete Friend</button>
+    </form>
+  </div>
+<% end %>
