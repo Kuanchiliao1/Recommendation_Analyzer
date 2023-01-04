@@ -5,28 +5,44 @@
   <a href="/support"><h2>Support</h2></a>
 </div>
 
+<div class="testbox">
+  <a href="/home?sort=completed"><h3>Sort by Completed</h3></a>
+  <a href="/home?sort=media_type"><h3>Sort by media type</h3></a>
+  <a href="/home?sort=friend"><h3>Sort by Friend</h3></a>
+  <a href="/home?sort=small_score"><h3>Sort by Score (low to high)</h3></a>
+  <a href="/home?sort=big_score"><h3>Sort by Score (high to low)</h3></a>
+  <a href="/home?sort=movie"><h3>Movies</h3></a>
+  <a href="/home?sort=game"><h3>Games</h3></a>
+  <a href="/home?sort=book"><h3>Books</h3></a>
+  <a href="/home?sort=tv"><h3>Tv Shows</h3></a>
+</div>
+
+<% if sorted_recs(@recs, @sort).empty? %>
+  <h3>Sorry, there aren't any recommendations of that type :(</h3>
+<% end %>
+
 <ul>
-  <% @recommendations.each do |recommendation| %>
+  <% sorted_recs(@recs, @sort).each do |rec| %>
     <div class="card" style="background-color:#CDCDCD">
-      <h2><%= recommendation[:name] %></h2>
+      <h2><%= rec[:name] %></h2>
       <ul>
-        <li>media_type: <%= recommendation[:media_type] %></li>
-        <li>description: <%= recommendation[:description] %></li>
-        <li>fname: <%= recommendation[:fname] %></li>
-        <li>analyzed_rating: <%= recommendation[:analyzed_rating] %></li>
+        <li>media_type: <%= rec[:media_type] %></li>
+        <li>description: <%= rec[:description] %></li>
+        <li>fname: <%= rec[:fname] %></li>
+        <li>analyzed_rating: <%= rec[:analyzed_rating] %></li>
         <li><h4>Expandable Content below</h4></li>
-        <li>friend_rating: <%= recommendation[:friend_rating] %></li>
-        <li>self_rating: <%= recommendation[:self_rating] %></li>
-        <li>date_added: <%= recommendation[:date_added] %></li>
-        <li>completed: <%= recommendation[:completed] %></li>
-        <li>completed_rating: <%= recommendation[:completed_rating] %></li>
-        <li>completed_date: <%= recommendation[:completed_date] %></li>
+        <li>friend_rating: <%= rec[:friend_rating] %></li>
+        <li>self_rating: <%= rec[:self_rating] %></li>
+        <li>date_added: <%= rec[:date_added] %></li>
+        <li>completed: <%= rec[:completed] %></li>
+        <li>completed_rating: <%= rec[:completed_rating] %></li>
+        <li>completed_date: <%= rec[:completed_date] %></li>
       </ul>
       <div class="testbox">
-        <form action="/recommendations/<%= recommendation[:id] %>/delete" method="post">
+        <form action="/recommendations/<%= rec[:id] %>/delete" method="post">
           <button type="submit">Delete</button>
         </form>
-        <a href="/recommendations/<%= recommendation[:id] %>/edit">Edit Rec</a>
+        <a href="/recommendations/<%= rec[:id] %>/edit">Edit Rec</a>
       </div>
     </div>
   <% end %>

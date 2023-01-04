@@ -3,7 +3,7 @@ CREATE DATABASE recommendations;      --Creates and connects to recommendation d
 
 CREATE DOMAIN rating AS integer CHECK (value BETWEEN 1 and 10);
 CREATE TYPE media AS ENUM ('tv show', 'movie', 'book', 'game');
-CREATE TYPE completion_status AS ENUM ('not started', 'in progress', 'save for later', 'completed');
+CREATE TYPE completion_status AS ENUM ('not started', 'save for later', 'in progress',  'completed');
 
 CREATE TABLE friends (
   id serial PRIMARY KEY,
@@ -44,6 +44,20 @@ INSERT INTO recommendations
             (name, media_type, description, friend_id,
             friend_rating, self_rating, analyzed_rating)
             VALUES ('Citizen Sleeper', 'game', '2nd good game', 2, 7, 9, 8);
+
+-- in progress rec
+INSERT INTO recommendations
+            (name, media_type, description, friend_id,
+            friend_rating, self_rating, analyzed_rating,
+            completed)
+            VALUES ('Mob Psycho', 'tv show', 'Anime', 1, 9, 7, 8, 'in progress');
+
+-- save for later rec
+INSERT INTO recommendations
+            (name, media_type, description, friend_id,
+            friend_rating, self_rating, analyzed_rating,
+            completed)
+            VALUES ('Breaking Bad', 'tv show', 'baddddd', 1, 10, 10, 10, 'save for later');
 
 -- completed rec
 INSERT INTO recommendations

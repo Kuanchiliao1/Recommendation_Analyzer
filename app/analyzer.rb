@@ -25,6 +25,8 @@ get "/test" do
   @friends = @database.all_friends
   @friends_names = @database.all_friends_names
   @friend = @database.find_friend(1)
+  @query = params[:sort]
+  @group = @recs.group_by {|h| h[:media_type]}.values.flatten
   erb :test, layout: :layout
 end
 
@@ -37,7 +39,8 @@ end
 #  Perhaps first part of route could be logged in users name
 #  So the link to recommendations page for logged in user would be: "http://localhost:4567/user"
 get "/home" do
-  @recommendations = @database.recs_with_friends
+  @recs = @database.recs_with_friends
+  @sort = params[:sort] || 'completed'
   erb :recommendations, layout: :layout
 end
 

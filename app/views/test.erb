@@ -7,3 +7,10 @@
   <li>All Friends Names: <%= @friends_names %></li>
   <li> 1 Friend: <%= @friend %></li>
 </ul>
+
+<% @group.each do |group| %>
+  <p><%= group %></p>
+<% end %>
+
+<a href="/test?sort=bogaloo">query test</a>
+<p>query:<%= @query %></p>

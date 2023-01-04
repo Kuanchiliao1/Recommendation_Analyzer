@@ -31,9 +31,9 @@ class AnalyzerDatabase
     query(sql, name, trust_rating)
   end
 
-  # Return recommendations + info
+  # Return recommendations, sorted by completion status
   def all_recs
-    sql = "SELECT * FROM recommendations"
+    sql = "SELECT * FROM recommendations ORDER BY completed"
     result = query(sql)
     format_result(result)
   end
@@ -47,7 +47,7 @@ class AnalyzerDatabase
 
   # Return all recommendations with friends info
   def recs_with_friends
-    sql = "SELECT r.*, f.name AS fname FROM recommendations AS r LEFT JOIN friends AS f ON r.friend_id = f.id"
+    sql = "SELECT r.*, f.name AS fname FROM recommendations AS r LEFT JOIN friends AS f ON r.friend_id = f.id ORDER BY completed"
     result = query(sql)
     format_result(result)
   end
