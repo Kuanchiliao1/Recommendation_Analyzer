@@ -15,15 +15,16 @@ end
 # Initialize database connection
 before do
   @database = AnalyzerDatabase.new(logger)
+  @user_id = 1
 end
 
 # Test Route
 get "/test" do
-  @recs = @database.all_recs
-  @recs_and_friends = @database.recs_with_friends
-  @rec = @database.find_rec(1)
-  @friends = @database.all_friends
-  @friends_names = @database.all_friends_names
+  @recs = @database.all_recs(@user_id)
+  @recs_and_friends = @database.recs_with_friends(@user_id)
+  @rec = @database.find_rec(@user_id, 1)
+  @friends = @database.all_friends(@user_id)
+  @friends_names = @database.all_friends_names(@user_id)
   @friend = @database.find_friend(1)
   @query = params[:sort]
   @group = @recs.group_by {|h| h[:media_type]}.values.flatten
@@ -39,14 +40,14 @@ end
 #  Perhaps first part of route could be logged in users name
 #  So the link to recommendations page for logged in user would be: "http://localhost:4567/user"
 get "/home" do
-  @recs = @database.recs_with_friends
+  @recs = @database.recs_with_friends(@user_id)
   @sort = params[:sort] || 'completed'
   erb :recommendations, layout: :layout
 end
 
 # Create Recommendation Page
 get "/recommendations/new" do
-  @friends = @database.all_friends
+  @friends = @database.all_friends(@user_id)
   erb :new_rec, layout: :layout
 end
 
@@ -57,8 +58,6 @@ post "/recommendations/new" do
   redirect "/home"
 end
 
-# Filter Recs button
-
 # View Rec Page
 get "/recommendations/:rec_id" do
   @rec = @database.find_rec(params[:rec_id])
@@ -67,8 +66,18 @@ end
 
 # Edit Rec Page
 get "/recommendations/:rec_id/edit" do
+  @friends = @database.all_friends(@user_id)
   @rec = @database.find_rec(params[:rec_id])
   erb :edit_rec, layout: :layout
+end
+
+post "/recommendations/:rec_id/edit" do
+  if params[:completed_status] == "completed"
+    @database.complete_rec(generate_completed_rec_params)
+  else
+    @database.update_rec(generate_updated_rec_params)
+  end
+  redirect "/home"
 end
 
 # Delete Rec Button
@@ -80,7 +89,7 @@ end
 
 # Friends Page
 get "/friends" do
-  @friends = @database.all_friends
+  @friends = @database.all_friends(@user_id)
   erb :friends, layout: :layout
 end
 
@@ -91,7 +100,7 @@ end
 
 # Add New Friend
 post "/friends/new" do
-  @database.create_friend(params[:friend_name], params[:trust_rating])
+  @database.create_friend(@user_id, params[:friend_name], params[:trust_rating])
   # confirmation flash message
   redirect "/friends"
 end

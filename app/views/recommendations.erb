@@ -24,7 +24,9 @@
 <ul>
   <% sorted_recs(@recs, @sort).each do |rec| %>
     <div class="card" style="background-color:#CDCDCD">
-      <h2><%= rec[:name] %></h2>
+      <a href="/recommendations/<%= rec[:id] %>">
+        <h2><%= rec[:name] %></h2>
+      </a>
       <ul>
         <li>media_type: <%= rec[:media_type] %></li>
         <li>description: <%= rec[:description] %></li>
@@ -34,7 +36,7 @@
         <li>friend_rating: <%= rec[:friend_rating] %></li>
         <li>self_rating: <%= rec[:self_rating] %></li>
         <li>date_added: <%= rec[:date_added] %></li>
-        <li>completed: <%= rec[:completed] %></li>
+        <li>completed: <%= rec[:completed_status] %></li>
         <li>completed_rating: <%= rec[:completed_rating] %></li>
         <li>completed_date: <%= rec[:completed_date] %></li>
       </ul>
@@ -42,7 +44,7 @@
         <form action="/recommendations/<%= rec[:id] %>/delete" method="post">
           <button type="submit">Delete</button>
         </form>
-        <a href="/recommendations/<%= rec[:id] %>/edit">Edit Rec</a>
+        <a href="/recommendations/<%= rec[:id] %>/edit">Update Rec</a>
       </div>
     </div>
   <% end %>

@@ -1,6 +1,76 @@
-<p>Edit rec page</p>
-<ul>
-  <% @rec.each do |key, value| %>
-    <li><%= key %>: <%= value %></li>
-  <% end %>
-</ul>
+<form action="/recommendations/<%= params[:rec_id] %>/edit" method="post">
+  <dl>
+    <dt>
+      <label for="rec_name">Edit recommendation name</label>
+    </dt>
+    <dd>
+      <input name="rec_name" type="text" placeholder ="<%= @rec[:name] %>" value ="<%= @rec[:name] %>">
+    </dd>
+    <dt>
+      <label for="media_type">Choose a media type</label>
+    </dt>
+    <dd>
+      <select name="media_type">
+        <option value ="<%= @rec[:media_type] %>" selected hidden><%= @rec[:media_type].capitalize %></option>
+        <option value="tv show">Television Show</option>
+        <option value="movie">Movie</option>
+        <option value="book">Book</option>
+        <option value="game">Game</option>
+      </select>
+    </dd>
+    <dt>
+      <label for="description">Insert a short description of the recommendation</label>
+    </dt>
+    <dd>
+      <input name="description" type="text" placeholder ="<%= @rec[:description] %>" value ="<%= @rec[:description] %>">
+    </dd>
+    <dt>
+      <label for="friend">Select which friend recommended you this media</label>
+    </dt>
+    <dd>
+      <select name="friend_id">
+        <% @friends.each do |friend| %>
+          <% if friend[:id] == @rec[:friend_id] %>
+            <option value="<%= friend[:id] %>" selected><%= friend[:name] %></option>
+          <% else %>
+            <option value="<%= friend[:id] %>"><%= friend[:name] %></option>
+          <% end %>
+        <% end %>
+      </select>
+    </dd>
+    <dt>
+      <label for="friend_rating">What does your friend rate this media from 1 to 10</label>
+    </dt>
+    <dd>
+      <input name="friend_rating" type="number" min="1" max="10" placeholder ="<%= @rec[:friend_rating] %>" value ="<%= @rec[:friend_rating] %>">
+    </dd>
+    <dt>
+      <label for="self_rating">What is your expected rating for this media from 1 to 10</label>
+    </dt>
+    <dd>
+      <input name="self_rating" type="number" min="1" max="10" placeholder ="<%= @rec[:self_rating] %>" value ="<%= @rec[:self_rating] %>">
+    </dd>
+    <dt>
+      <label for="completed_status">Update completion status</label>
+    </dt>
+    <dd>
+      <select name="completed_status">
+        <option value ="<%= @rec[:completed_status] %>" selected hidden><%= @rec[:completed_status].capitalize %></option>
+        <option value="not started">Not Started</option>
+        <option value="save for later">Save for Later</option>
+        <option value="in progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+    </dd>
+    <dt>
+      <label for="completed_rating">Input your updated rating after completing the recommendation</label>
+    </dt>
+    <dd>
+      <input name="completed_rating" type="number" min="1" max="10" placeholder ="<%= @rec[:completed_rating] %>" value ="<%= @rec[:completed_rating] %>">
+    </dd>
+  </dl>
+  <fieldset class="actions">
+    <input type="submit" value="Save">
+    <a href="/home">Cancel</a>
+  </fieldset>
+</form>

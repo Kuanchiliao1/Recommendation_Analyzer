@@ -1,6 +1,16 @@
 def generate_rec_params
   analyzed_rating = (params[:friend_rating].to_i + params[:self_rating].to_i) / 2
-  rec_params = params.values << analyzed_rating
+  [@user_id, analyzed_rating] + params.values
+end
+
+def generate_updated_rec_params
+  analyzed_rating = (params[:friend_rating].to_i + params[:self_rating].to_i) / 2
+  params.values.reject(&:empty?) << analyzed_rating
+end
+
+def generate_completed_rec_params
+  analyzed_rating = (params[:friend_rating].to_i + params[:self_rating].to_i) / 2
+  params.values << analyzed_rating
 end
 
 # View helper methods

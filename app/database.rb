@@ -16,9 +16,9 @@ class AnalyzerDatabase
   def create_rec(rec_params)
     sql = <<~SQL
       INSERT INTO recommendations
-            (name, media_type, description, friend_id,
-            friend_rating, self_rating, analyzed_rating)
-            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            (user_id, analyzed_rating, name, media_type,
+            description, friend_id, friend_rating, self_rating)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     SQL
 
     query(sql, *rec_params)
@@ -26,29 +26,28 @@ class AnalyzerDatabase
 
   # Create friend
   #   Considering changing to array like create_rec
-  def create_friend(name, trust_rating)
-    sql = "INSERT INTO friends (name, trust_rating) VALUES ($1, $2)"
-    query(sql, name, trust_rating)
+  def create_friend(user_id, name, trust_rating)
+    sql = "INSERT INTO friends (user_id, name, trust_rating) VALUES ($1, $2, $3)"
+    query(sql, user_id, name, trust_rating)
   end
 
-  # Return recommendations, sorted by completion status
-  def all_recs
-    sql = "SELECT * FROM recommendations ORDER BY completed"
-    result = query(sql)
-    format_result(result)
-  end
-
-  # Return all completed recommendations + info
-  def completed_recs
-    sql = "SELECT * FROM recommendations WHERE completed IS TRUE"
-    result = query(sql)
+  # DEPRECATED Return recommendations, sorted by completion status
+  def all_recs(user_id)
+    sql = "SELECT * FROM recommendations WHERE user_id = $1 ORDER BY completed"
+    result = query(sql, user_id)
     format_result(result)
   end
 
   # Return all recommendations with friends info
-  def recs_with_friends
-    sql = "SELECT r.*, f.name AS fname FROM recommendations AS r LEFT JOIN friends AS f ON r.friend_id = f.id ORDER BY completed"
-    result = query(sql)
+  def recs_with_friends(user_id)
+    sql = <<~SQL
+      SELECT r.*, f.name AS fname FROM recommendations AS r
+      LEFT JOIN friends AS f ON r.friend_id = f.id
+      WHERE r.user_id = $1
+      ORDER BY completed_status
+    SQL
+
+    result = query(sql, user_id)
     format_result(result)
   end
 
@@ -60,16 +59,16 @@ class AnalyzerDatabase
   end
 
   # Return list of existing friend names
-  def all_friends
-    sql = "SELECT * FROM friends"
-    result = query(sql)
+  def all_friends(user_id)
+    sql = "SELECT * FROM friends WHERE user_id = $1"
+    result = query(sql, user_id)
     format_result(result)
   end
 
   # Return list of existing friend names
-  def all_friends_names
-    sql = "SELECT name FROM friends"
-    result = query(sql)
+  def all_friends_names(user_id)
+    sql = "SELECT name FROM friends WHERE user_id = $1"
+    result = query(sql, user_id)
     format_result(result)
   end
 
@@ -81,25 +80,30 @@ class AnalyzerDatabase
   end
 
   # Update info for recommendation
-  def update_rec(id, name, media_type, description, friend_id, friend_rating, self_rating, completed_rating)
+  def update_rec(rec_params)
     sql = <<~SQL
       UPDATE recommendations
-      SET name = $2, media_type = $3, description = $4, friend_id = $5,
-      friend_rating = $6, self_rating = $7, completed_rating = $8)
-      WHERE id = $1
+      SET name = $1, media_type = $2, description = $3,
+      friend_id = $4, friend_rating = $5, self_rating = $6,
+      completed_status = $7, analyzed_rating = $9
+      WHERE id = $8
     SQL
 
-    query(sql, id, name, media_type, description, friend_id,
-          friend_rating, self_rating, completed_rating)
+    query(sql, *rec_params)
   end
 
-  # Update recommendation to be completed + add completion date
-  def complete_rec(id, completed_rating)
-    sql = "UPDATE reccomendations SET completed = true, completed_rating = $2, completed_date = NOW() WHERE id = $1"
-    query(sql, id, completed_rating)
-  end
+  # Update info for recommendation that is completed
+  def complete_rec(rec_params)
+    sql = <<~SQL
+      UPDATE recommendations
+      SET name = $1, media_type = $2, description = $3, friend_id = $4,
+      friend_rating = $5, self_rating = $6, completed_status = $7,
+      completed_rating = $8, completed_date = NOW(), analyzed_rating = $10
+      WHERE id = $9
+    SQL
 
-  # Update recommendation to be incomplete
+    query(sql, *rec_params)
+  end
 
   # Update friend info
   def update_friend(id, name, trust_rating)
@@ -108,13 +112,13 @@ class AnalyzerDatabase
   end
 
   # Delete recommendation
-  def delete_rec(id)
+  def delete_rec (id)
     sql = "DELETE FROM recommendations WHERE id = $1"
     query(sql, id)
   end
 
   # Delete friend + their recommendations
-  def delete_friend(id)
+  def delete_friend (id)
     sql = "DELETE FROM recommendations WHERE friend_id = $1"
     query(sql, id)
 
