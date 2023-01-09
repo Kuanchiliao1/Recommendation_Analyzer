@@ -1,10 +1,10 @@
 <form action="/recommendations/new" method="post">
   <dl>
     <dt>
-      <label for="rec_name">Insert name of recommended media</label>
+      <label for="name">Insert name of recommended media</label>
     </dt>
     <dd>
-      <input name="rec_name" type="text">
+      <input name="name" type="text" placeholder="<%= params[:name] %>" value="<%= params[:name] %>">
     </dd>
     <dt>
       <label for="media_type">Choose a media type</label>
@@ -21,15 +21,19 @@
       <label for="description">Insert a short description of the recommendation</label>
     </dt>
     <dd>
-      <input name="description" type="text">
+      <input name="description" type="text" placeholder="<%= params[:description] %>" value="<%= params[:description] %>">
     </dd>
     <dt>
-      <label for="friend">Select which friend recommended you this media</label>
+      <label for="friend_id">Select which friend recommended you this media</label>
     </dt>
     <dd>
       <select name="friend_id">
         <% @friends.each do |friend| %>
-          <option value="<%= friend[:id] %>"><%= friend[:name] %></option>
+          <% if friend[:id] == params[:friend_id] %>
+            <option value="<%= friend[:id] %>" selected><%= friend[:name] %></option>
+          <% else %>
+            <option value="<%= friend[:id] %>"><%= friend[:name] %></option>
+          <% end %>
         <% end %>
       </select>
     </dd>
@@ -37,17 +41,17 @@
       <label for="friend_rating">What does your friend rate this media from 1 to 10</label>
     </dt>
     <dd>
-      <input name="friend_rating" type="number" min="1" max="10">
+      <input name="friend_rating" type="number" min="1" max="10" placeholder="<%= params[:friend_rating] %>" value="<%= params[:friend_rating] %>">
     </dd>
     <dt>
       <label for="self_rating">What is your expected rating for this media from 1 to 10</label>
     </dt>
     <dd>
-      <input name="self_rating" type="number" min="1" max="10">
+      <input name="self_rating" type="number" min="1" max="10" placeholder="<%= params[:self_rating] %>" value="<%= params[:self_rating] %>">
     </dd>
   </dl>
   <fieldset class="actions">
     <input type="submit" value="Save">
-    <a href="/home>">Cancel</a>
+    <a href="/home">Cancel</a>
   </fieldset>
 </form>

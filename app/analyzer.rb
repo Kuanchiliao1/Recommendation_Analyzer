@@ -22,7 +22,7 @@ end
 get "/test" do
   @recs = @database.all_recs(@user_id)
   @recs_and_friends = @database.recs_with_friends(@user_id)
-  @rec = @database.find_rec(@user_id, 1)
+  @rec = @database.find_rec(1)
   @friends = @database.all_friends(@user_id)
   @friends_names = @database.all_friends_names(@user_id)
   @friend = @database.find_friend(1)
@@ -53,9 +53,13 @@ end
 
 # Add New Recommendation
 post "/recommendations/new" do
-  @database.create_rec(generate_rec_params)
-  # Add flash message
-  redirect "/home"
+  if valid_rec?
+    @database.create_rec(format_rec)
+    redirect "/home"
+  else
+    @friends = @database.all_friends(@user_id)
+    erb :new_rec, layout: :layout
+  end
 end
 
 # View Rec Page
@@ -72,12 +76,18 @@ get "/recommendations/:rec_id/edit" do
 end
 
 post "/recommendations/:rec_id/edit" do
-  if params[:completed_status] == "completed"
-    @database.complete_rec(generate_completed_rec_params)
+  if valid_rec?
+    if params[:completed_status] == "completed"
+      @database.complete_rec(format_rec)
+    else
+      @database.update_rec(format_rec)
+    end
+    redirect "/home"
   else
-    @database.update_rec(generate_updated_rec_params)
+    @friends = @database.all_friends(@user_id)
+    @rec = @database.find_rec(params[:rec_id])
+    erb :edit_rec, layout: :layout
   end
-  redirect "/home"
 end
 
 # Delete Rec Button
@@ -100,9 +110,12 @@ end
 
 # Add New Friend
 post "/friends/new" do
-  @database.create_friend(@user_id, params[:friend_name], params[:trust_rating])
-  # confirmation flash message
-  redirect "/friends"
+  if valid_friend?
+    @database.create_friend(@user_id, params[:friend_name].strip, params[:trust_rating])
+    redirect "/friends"
+  else
+    erb :new_friend, layout: :layout
+  end
 end
 
 # Edit Friend Info Page

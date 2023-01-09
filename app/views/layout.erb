@@ -6,6 +6,13 @@
     <link rel="stylesheet" type="text/css" href="<%= url('/stylesheets/styles.css') %>"> 
   </head>
   <body>
+    <% if session[:errors] %>
+        <% session.delete(:errors).each do |error| %>
+          <div class="error">
+            <p><%= error %></p>
+          </div>
+        <% end %>
+    <% end %>
     <main>
       <%== yield %>
     </main>

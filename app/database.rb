@@ -16,9 +16,9 @@ class AnalyzerDatabase
   def create_rec(rec_params)
     sql = <<~SQL
       INSERT INTO recommendations
-            (user_id, analyzed_rating, name, media_type,
-            description, friend_id, friend_rating, self_rating)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+                  (name, media_type, description, friend_id,
+                  friend_rating, self_rating, analyzed_rating, user_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     SQL
 
     query(sql, *rec_params)
@@ -33,7 +33,7 @@ class AnalyzerDatabase
 
   # DEPRECATED Return recommendations, sorted by completion status
   def all_recs(user_id)
-    sql = "SELECT * FROM recommendations WHERE user_id = $1 ORDER BY completed"
+    sql = "SELECT * FROM recommendations WHERE user_id = $1 ORDER BY completed_status"
     result = query(sql, user_id)
     format_result(result)
   end

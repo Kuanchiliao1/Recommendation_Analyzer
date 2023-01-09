@@ -26,7 +26,7 @@ CREATE TABLE recommendations (
   friend_id integer NOT NULL REFERENCES friends (id),
   friend_rating rating NOT NULL,
   self_rating rating NOT NULL,
-  date_added date DEFAULT NOW() NOT NULL,
+  date_added date DEFAU LT NOW() NOT NULL,
   analyzed_rating rating NOT NULL,
   completed_status completion_status DEFAULT 'not started',
   completed_rating rating,
